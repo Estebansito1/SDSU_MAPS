@@ -1,3 +1,7 @@
+/*this code defines a building class used to represent a building on the SDSU
+ *campus map in the program. he biulding have a ID number, name, and a 2D position on the screen
+ *and a display color.
+ */
 #ifndef BUILDING_H
 #define BUILDING_H
 
