@@ -23,6 +23,8 @@
         //the constructor that sets all values when created
         Building(int i, const std::string& n, sf::Vector2f pos, sf::Color c)
             :id(i), name(n), color(c){}
+
+/////////
         // draws the building as a circle in the SFML window
         void draw(sf::RenderWindow& window) const
         {
