@@ -1,7 +1,6 @@
 /*This code defines a simple binary search tree used to store and quickly
  *look up buildings by name. Esch node keeps a buildings name =key and ID,
  *the tree inserts nodes in alphabetical order to allow fast searching.
- *
  */
 #ifndef BUILDINGTREE_H
 #define BUILDINGTREE_H
@@ -26,11 +25,11 @@
     class BuildingTree
     {
     public:
-        BuildingTree() : root(nullptr) {}
+        BuildingTree() : root(nullptr){}
 
         void insert(const std::string& key, int id)
         {
-            root = insertRec(root, key, id);
+            root =insertRec(root, key, id);
         }
 //////////
     // find the ID of the buildinng by its name = key
@@ -55,7 +54,7 @@
         static BuildingNode* insertRec(BuildingNode* node, const std::string& key, int id)
         {
             if (!node) return new BuildingNode(key, id);
-            if (key < node->key) node->left  = insertRec(node->left,  key, id);
+            if (key< node->key) node->left  = insertRec(node->left,  key, id);
             else if (key > node->key) node->right = insertRec(node->right, key, id);
 
             return node;

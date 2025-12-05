@@ -2,13 +2,14 @@
  *campus map in the program. he biulding have a ID number, name, and a 2D position on the screen
  *and a display color.
  */
+
 #ifndef BUILDING_H
 #define BUILDING_H
 
 #include <SFML/Graphics.hpp>
 #include <string>
 
-    // the class represent a building on the SDSU map
+    //the class represents a building on the SDSU map
     class Building
     {
     public:
@@ -19,11 +20,10 @@
 
         Building()= default; // makes an empty building
 
-        // the constructor that set all values when created
+        //the constructor that sets all values when created
         Building(int i, const std::string& n, sf::Vector2f pos, sf::Color c)
-            : id(i), name(n), position(pos), color(c) {}
-/////////////
-        // fraws the building as a circle in the SFML window
+            :id(i), name(n), color(c){}
+        // draws the building as a circle in the SFML window
         void draw(sf::RenderWindow& window) const
         {
             sf::CircleShape shape(15);
@@ -31,8 +31,10 @@
             shape.setPosition(position);
             window.draw(shape);
         }
-    };
 
-    #endif
+    };
+#endif
+
+
 
 
