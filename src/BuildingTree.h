@@ -21,7 +21,7 @@
         BuildingNode(const std::string& k, int i)
             :key(k), id(i), left(nullptr), right(nullptr){}
     };
-//////
+
     // these functions are allowed to be used by
     //others to inser buildings or search for them
     class BuildingTree
@@ -47,6 +47,7 @@
             }
             return -1;
         }
+
         // private helper logic contains the internal root pointer
         //and recursuve insert function
         private:
