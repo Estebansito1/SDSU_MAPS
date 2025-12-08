@@ -40,7 +40,25 @@
 
         // find the shortes path between two nodes using BFS
         //return a list of node indecis that form the pah
-        std::vector<int> shortesPath(int start, int end) const;
+        std::vector<int> shortestPath(int start, int end) const;
+
+        // renders(takes data, buiding path) all edges between building to the SFML window
+        void drawEdges(sf::RenderWindow& window, const std::vector<sf::Vector2f>& position)
+            const;
+
+        // highlight the shortes path on the map using SFML graphics
+        void drawPath(sf::RenderWindow& window, const std::vector<sf::Vector2f>& positions,
+            const std::vector<int>& path) const;
+
+        private:
+            // number of graph nodes buildings
+            int n =0;
+
+        // adjacent list storing neighnors indices
+        std::vector<std::vector<int>> adj;
+
+        std::unordered_map<std::string, int> buildingCodeToIndex;
+        std::unordered_map<std::string, int> courseToIndex;
 
 
     };
