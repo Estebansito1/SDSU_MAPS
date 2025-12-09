@@ -11,7 +11,7 @@
 #include <algorithm>
 
     // the constructor createes graph with n  node, each one = a building
-    Graph::Graph(int a) : n(n), adj(n) {}
+    Graph::Graph(int n) : n(n), adj(n) {}
 
     //rezise graph if more buildings are added later
     void Graph::setSize(int n_)
@@ -58,8 +58,89 @@
     //BST shortest path search, return the walking path from star to finish
     std::vector<int> Graph::shortestPath(int start, int end) const
     {
+        std::vector<int> path;
+        if (start<0 || end<0 || start>= n || end >= n) return path;
 
+        std::vector<int> parent(n, -1);
+        std::vector<bool> visited(n, false);
+        std::queue<int> q;
+
+        visited[start] = true;
+        q.push(start);
+
+        // breadth first search
+        while (!q.empty())
+        {
+            int u=q.front();
+            q.pop();
+            if (u==end) break;
+
+            for (int v : adj[u])
+            {
+                if (!visited[v])
+                {
+                visited[v] = true;
+                parent[v] = u;
+                q.push(v);
+                }
+            }
+        }
+        if (!visited[end]) return path;
+
+        // reconstruct path backwards using parent
+        for (int cur=end; cur !=-1; cur=parent[cur])
+        {
+            path.push_back(cur);
+        }
+        std::reverse(path.begin(), path.end());
+        return path;
     }
+/////////
+
+    // draw edges betweened connected buildings
+    void Graph::drawEdges(sf::RenderWindow& window, const std::vector<sf::Vector2f>& positions) const
+    {
+        for (int u=0; u<n; ++u)
+        {
+            for (int v: adj[u])
+            {
+                if (u < v)
+                {
+                    sf::Vertex line[]=
+                    {
+                        sf::Vertex(positions[u] + sf::Vector2f(15.f, 15.f),
+                        sf::Color(150,150,150)),
+                        sf::Vertex(positions[v] + sf::Vector2f(15.f, 15.f),
+                        sf::Color(150,150,150))
+
+                    };
+                    window.draw(line, 2, sf::Triangles);
+                }
+            }
+        }
+    }
+/////////
+
+    // draw the currently active path white line between two buildings
+    void Graph::drawPath(sf::RenderWindow& window, const std::vector<sf::Vector2f>& positions,
+        const std::vector<int>& path) const
+    {
+        if (path.size() < 2) return;
+        for (std::size_t i=0; i+1 < path.size(); ++i)
+        {
+            int a = path[i];
+            int b = path[i+1];
+
+            sf::Vertex line[]=
+            {
+                sf::Vertex(positions[a] + sf::Vector2f(15.f, 15.f), sf::Color::White),
+                sf::Vertex(positions[b] +sf::Vector2f(15.f, 15.f), sf::Color::White)
+            };
+            window.draw(line, 2, sf::Lines);
+        }
+    }
+
+
 
 
 
