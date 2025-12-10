@@ -126,7 +126,7 @@
         {
         if (!history.empty())
         {
-            selectedA = history.top;
+            selectedA = history.top();
             history.pop();
         }
         }
@@ -152,7 +152,7 @@
 
         if (selectedA==-1)
             selectedA = idx;
-        else if (selectedB = -1)
+        else if (selectedB == -1)
         {
             history.push(selectedA);
             selectedB= idx;
@@ -177,7 +177,7 @@
     void UI::handleText(sf::Event &e)
     {
         if (e.text.unicode==13) return;
-        if (e.text.unicode='u' || e.text.unicode== 'u') return;
+        if (e.text.unicode== 'u' || e.text.unicode== 'u') return;
 
         if (e.text.unicode==8 && !typedInput.empty())
         {
@@ -227,8 +227,67 @@
 
         sf::Font font;
         font.loadFromFile("fonts/arial.ttf");
+        //draw each building
+        for (auto &b : buildings)
+        {
+            b.draw(window);
+            sf::Text label(b.name, font, 14);
+            label.setFillColor(sf::Color::Black);
+            label.setPosition(b.position.x+10, b.position.y-10);
+            window.draw(label);
+        }
+        float dt= clock.restart().asSeconds();
+        animateWalker(dt);
+        window.draw(walker);
 
+        sf::Text t("Find building: " + typedInput, font, 18);
+        t.setFillColor(sf::Color::Black);
+        t.setPosition(10,10);
+        window.draw(t);
 
+        sf::Text undoLabel("Press U to undo", font, 18);
+        undoLabel.setFillColor(sf::Color::Black);
+        undoLabel.setPosition(10,40);
+        window.draw(undoLabel);
+
+        window.display();
+
+    }
+    // main loop
+    void UI::run() {
+        while (window.isOpen())
+        {
+            sf::Event e;
+            while (window.pollEvent(e))
+            {
+                if (e.type==sf::Event::Closed)
+                    window.close();
+                else if (e.type==sf::Event::KeyPressed)
+                {
+                    if (e.key.code==sf::Keyboard::U)
+                    {
+                        undo(); // undo stack
+                        continue;
+                    }
+                    else if (e.key.code==sf::Keyboard::Enter)
+                    {
+                        processSearchInput();
+                        typedInput.clear();
+                        continue;
+                    }
+                }
+                else if (e.type==sf::Event::MouseButtonPressed)
+                {
+                    int idx=detectClick({(float)e.mouseButton.x,(float)e.mouseButton.y});
+                    handleClick(idx);
+                }
+                else if (e.type==sf::Event::TextEntered)
+                {
+                    handleText(e);
+                }
+            }
+            drawScene();
+        }
     }
 
 
