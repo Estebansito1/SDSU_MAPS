@@ -130,7 +130,7 @@
                 history.pop();
             }
 
-        std::cout<<"Undo " <<selectedA<<"\n";
+        std::cout<<"Undo clear destination: " <<selectedA<<"\n";
     }
     else if (selectedA != -1)
     {
@@ -138,7 +138,7 @@
         {
         selectedA = history.top();
             history.pop();
-            std::cout<<"Undo"<<selectedA<<"\n";
+            std::cout<<"Undo back to: "<<selectedA<<"\n";
         }
         else
         {
@@ -160,7 +160,7 @@
 
         if (idx==-1)
         {
-        std::cout<<"Return from building A to B: " << key <<"\n";
+        std::cout<<"Unknow building: " << key <<"\n";
             return;
         }
 
