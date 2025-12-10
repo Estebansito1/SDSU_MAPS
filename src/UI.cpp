@@ -99,7 +99,7 @@
             activePath = graph.shortestPath(selectedA, selectedB);
             if (activePath.size() >= 2)
             {
-                animating true;
+                animating = true;
                 t=0.f;
                 pathPos=0;
                 walker.setPosition(buildings[activePath[0]].position);
@@ -141,6 +141,123 @@
                 selectedA = -1;
         }
     }
+    //handle building name or course code input from keyboard
+    void UI::processSearchInput()
+    {
+        std::string key = toUpper(typedInput);
+        int idx = graph.indexFromCourse(key);
+        if (idx ++ -1)
+            idx =buildingTree.find(key);
+        if (idx==-1) return;
+
+        if (selectedA==-1)
+            selectedA = idx;
+        else if (selectedB = -1)
+        {
+            history.push(selectedA);
+            selectedB= idx;
+        }
+        else
+        {
+        history.push(selectedA);
+        history.push(selectedB);
+        selectedA = idx;
+        selectedB= -1;
+        }
+        if (selectedA != -1 && selectedB != -1)
+        {
+        activePath = graph.shortestPath(selectedA, selectedB);
+            animating = true;
+            t=0.f;
+            pathPos =0;
+            walker.setPosition(buildings[activePath[0]].position);
+        }
+    }
+    // prevent Typing enter or u into search bar
+    void UI::handleText(sf::Event &e)
+    {
+        if (e.text.unicode==13) return;
+        if (e.text.unicode='u' || e.text.unicode== 'u') return;
+
+        if (e.text.unicode==8 && !typedInput.empty())
+        {
+            typedInput.pop_back();
+            return;
+        }
+        if (e.text.unicode >= 32 && e.text.unicode <= 126)
+            typedInput +=(char)toupper(e.text.unicode);
+    }
+    // animated walker smoothly along path using linear
+    void UI::animateWalker(float dt)
+    {
+        if (!animating) return;
+        if (activePath.empty()) return;
+        if (pathPos >= (int)activePath.size() -1) return;
+
+        int a = activePath[pathPos];
+        int b =activePath[pathPos +1];
+
+        sf::Vector2f A = buildings[a].position;
+        sf::Vector2f B = buildings[b].position;
+
+        t += walkSpeed * dt;
+        if (t >= 1.f)
+        {
+            t = 0.f;
+            pathPos++;
+
+            if (pathPos >= (int)activePath.size() -1)
+            {
+                animating = false;
+                walker.setPosition(B);
+                return;
+            }
+        }
+        walker.setPosition(A + (B-A) * t);
+    }
+    // draw all map elements and UI text
+    void UI::drawScene()
+    {
+        window.clear();
+        window.draw(mapSprite);
+
+        std::vector<sf::Vector2f> pos;
+        for (auto &b : buildings) pos.push_back(b.position);
+        graph.drawEdges(window, pos);
+
+        sf::Font font;
+        font.loadFromFile("fonts/arial.ttf");
+
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
