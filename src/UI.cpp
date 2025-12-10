@@ -193,7 +193,7 @@
     void UI::handleText(sf::Event &e)
     {
         if (e.text.unicode==13) return;
-       // if (e.text.unicode== 'U' || e.text.unicode== 'u') return;
+        if (e.text.unicode== 'U' || e.text.unicode== 'U') return;
 
         if (e.text.unicode==8 && !typedInput.empty())
         {

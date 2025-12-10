@@ -44,3 +44,5 @@ Searching Algorithm = Searching for buildings via Binary Search Tree + Hash look
 Sorting Algorithm = Buildings are sorted alphabetically in UI
 Other Algorithms = BFS shortest path algorithm
 GUI / Visualization = Full SFML GUI with: clickable buildings, animated moving ball, real map, text input, labels, path visualization
+
+![Screen Shot 2025-12-10 at 12.38.05 PM.png](../../Desktop/Screen%20Shot%202025-12-10%20at%2012.38.05%20PM.png)
