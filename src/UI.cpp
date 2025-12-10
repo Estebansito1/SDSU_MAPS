@@ -18,10 +18,12 @@
     }
 
     //constructor load map places buildinng, builds graph + BST
-    UI::UI():window(sf::VideoMode(1200, 800), "SDS_MAPS")
+    UI::UI():window(sf::VideoMode(1280, 800), "SDSU maps")
     {
         if (!mapTexture.loadFromFile("assets/sdsu_map.png"))
-            std::cout<<"Failed to load map /n";
+        {
+            std::cout<<"Failed to load map \n";
+        }
         mapSprite.setTexture(mapTexture);
         //Vector list of campus building ID,name, map possition, color
         buildings=
@@ -39,7 +41,7 @@
         graph.setSize(buildings.size());
 
         //insert buildings into BTS and the graph look up table
-        for (auto& b : buildings)
+        for (auto &b : buildings)
         {
             std::string key = toUpper(b.name);
             buildingTree.insert(key, b.id);
@@ -48,8 +50,8 @@
         // stores class in the building location
         graph.addCourseLocation("CS210", "GMCS");
         graph.addCourseLocation("CS370", "GMCS");
-        graph.addCourseLocation("MATH303", "ARC");
-        graph.addCourseLocation("GAR", "EBA");
+        graph.addCourseLocation("ART100", "ARC");
+        graph.addCourseLocation("FIN240", "EBA");
         //GRAPH EDGES walking paths between buildings
         auto E = [&](int a, int b) {graph.addEdge(a,b,1);};
         E(0,7); E(0,6); E(7,1); E(1,5); E(1,4); E(5,3); E(3,4); E(4,2); E(2,0);
@@ -80,7 +82,9 @@
     {
         if (idx ==-1) return;
         if (selectedA ==-1)
+        {
             selectedA=idx;
+        }
         else if (selectedB ==-1)
         {
             history.push(selectedA); // save history for undo
@@ -109,7 +113,11 @@
     // undo navigation by popping the stack LIFO
     void UI::undo()
     {
-    if (history.empty()) return;
+    if (history.empty())
+    {
+        std::cout<<" No previous destination in history.\n";
+        return;
+    }
         if (selectedA != -1 && selectedB != -1)
         {
             selectedB =-1;
@@ -121,37 +129,45 @@
             selectedA =history.top();
                 history.pop();
             }
-        }
-        else if (selectedA !=-1)
-        {
+
+        std::cout<<"Undo " <<selectedA<<"\n";
+    }
+    else if (selectedA != -1)
+    {
         if (!history.empty())
         {
-            selectedA = history.top();
+        selectedA = history.top();
             history.pop();
+            std::cout<<"Undo"<<selectedA<<"\n";
         }
-        }
-        else if (selectedA !=-1)
+        else
         {
-            if (!history.empty())
-            {
-            selectedA = history.top();
-                history.pop();
-            }
-            else
-                selectedA = -1;
+            selectedA=-1;
+            std::cout<<"Undo cleared selection\n";
         }
+      }
     }
+
     //handle building name or course code input from keyboard
     void UI::processSearchInput()
     {
         std::string key = toUpper(typedInput);
+        std::cout<<"Searching for:" << key <<"\n";
+
         int idx = graph.indexFromCourse(key);
-        if (idx ++ -1)
+        if (idx == -1)
             idx =buildingTree.find(key);
-        if (idx==-1) return;
+
+        if (idx==-1)
+        {
+        std::cout<<"Return from building A to B: " << key <<"\n";
+            return;
+        }
 
         if (selectedA==-1)
+        {
             selectedA = idx;
+        }
         else if (selectedB == -1)
         {
             history.push(selectedA);
@@ -177,7 +193,7 @@
     void UI::handleText(sf::Event &e)
     {
         if (e.text.unicode==13) return;
-        if (e.text.unicode== 'u' || e.text.unicode== 'u') return;
+       // if (e.text.unicode== 'U' || e.text.unicode== 'u') return;
 
         if (e.text.unicode==8 && !typedInput.empty())
         {
@@ -185,8 +201,34 @@
             return;
         }
         if (e.text.unicode >= 32 && e.text.unicode <= 126)
+        {
             typedInput +=(char)toupper(e.text.unicode);
+        }
     }
+    //
+    void UI::processCourse()
+    {
+        int idx=graph.indexFromCourse(typedInput);
+        if (idx == -1) idx =buildingTree.find(typedInput);
+        if (idx==-1) return;
+
+        if (selectedA==-1) selectedA=idx;
+        else selectedB=idx;
+
+        if (selectedA != -1 && selectedB != -1)
+        {
+        activePath = graph.shortestPath(selectedA, selectedB);
+            if (activePath.size() >= 2)
+            {
+            animating = true;
+                t=0.f;
+                pathPos =0;
+                walker.setPosition(buildings[activePath[0]].position);
+            }
+        }
+    }
+
+
     // animated walker smoothly along path using linear
     void UI::animateWalker(float dt)
     {
@@ -226,7 +268,7 @@
         graph.drawEdges(window, pos);
 
         sf::Font font;
-        font.loadFromFile("fonts/arial.ttf");
+        font.loadFromFile("fonts/Arial.ttf");
         //draw each building
         for (auto &b : buildings)
         {
@@ -240,7 +282,7 @@
         animateWalker(dt);
         window.draw(walker);
 
-        sf::Text t("Find building: " + typedInput, font, 18);
+        sf::Text t("Find BUILDING: " + typedInput, font, 18);
         t.setFillColor(sf::Color::Black);
         t.setPosition(10,10);
         window.draw(t);
@@ -264,19 +306,21 @@
                     window.close();
                 else if (e.type==sf::Event::KeyPressed)
                 {
-                    if (e.key.code==sf::Keyboard::U)
+                    if (e.key.code==sf::Keyboard::U && typedInput.empty())
                     {
+                        std::cout<<"undo pressed!\n";
                         undo(); // undo stack
                         continue;
                     }
                     else if (e.key.code==sf::Keyboard::Enter)
                     {
+                        std::cout<<"enter pressed! processing search\n";
                         processSearchInput();
                         typedInput.clear();
                         continue;
                     }
                 }
-                else if (e.type==sf::Event::MouseButtonPressed)
+                else if (e.type==sf::Event::MouseButtonPressed && e.mouseButton.button == sf::Mouse::Left)
                 {
                     int idx=detectClick({(float)e.mouseButton.x,(float)e.mouseButton.y});
                     handleClick(idx);
